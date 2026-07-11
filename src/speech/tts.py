@@ -15,7 +15,7 @@ class TTS:
     ):
         self.voice = voice
         self.sample_rate = sample_rate
-        self.pipeline = KPipeline(lang_code=lang)
+        self.pipeline = KPipeline(lang_code=lang, repo_id="hexgrad/Kokoro-82M")
 
     def generate(self, text: str) -> np.ndarray:
         chunks = []
