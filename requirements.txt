@@ -24,6 +24,7 @@ dlinfo==2.0.0
 docopt==0.6.2
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 espeakng-loader==0.2.4
+evdev==1.9.3
 faster-whisper==1.2.1
 filelock==3.29.0
 flatbuffers==25.12.19
@@ -64,9 +65,11 @@ pycparser==3.0
 pydantic==2.13.4
 pydantic-core==2.46.4
 pygments==2.20.0
+pynput==1.8.2
 pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
+python-xlib==0.33
 pyyaml==6.0.3
 rdflib==7.6.0
 referencing==0.37.0
@@ -95,7 +98,8 @@ tenacity==9.1.4
 termcolor==3.3.0
 thinc==8.3.13
 tokenizers==0.22.2
-torch==2.13.0+cpu
+torch==2.8.0+cpu
+torchaudio==2.8.0+cpu
 tqdm==4.68.4
 transformers==5.13.1
 typer==0.26.8

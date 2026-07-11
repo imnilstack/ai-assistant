@@ -12,7 +12,7 @@
   },
 
   "speech": {
-    "stt_enabled": false,
+    "stt_enabled": true,
     "tts_enabled": true
   }
 }

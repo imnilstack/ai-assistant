@@ -2,20 +2,43 @@ from pathlib import Path
 
 from src.ai.gemini import generate_response
 from src.config.config import config
-from src.speech.tts import TTS
 
 personality = ""
+tts = None
+stt = None
 
-if config["personality"]["enabled"]:
+if config.get("personality", {}).get("enabled", False):
     personality = Path(config["personality"]["path"]).read_text(encoding="utf-8")
 
-if config.get("speech", {}).get("tts_enabled", False):
-    tts = TTS(voice=config["speech"].get("voice", "af_bella"))
+speech_config = config.get("speech", {})
+
+if speech_config.get("tts_enabled", False):
+    from src.speech.tts import TTS
+
+    tts = TTS(voice=speech_config.get("voice", "af_bella"))
+
+if speech_config.get("stt_enabled", False):
+    from src.speech.stt import STT
+
+    stt = STT(
+        model_size=speech_config.get("stt_model", "base"),
+        device=speech_config.get("stt_device", "cpu"),
+        compute_type=speech_config.get("stt_compute_type", "int8"),
+    )
+
+
+def _get_user_message():
+    if stt is not None:
+        msg = stt.listen()
+        print(f"> {msg}")
+        return msg
+
+    return input("> ").strip()
 
 
 def start_chat_loop():
     while True:
-        msg = input("> ").strip()
+        msg = _get_user_message()
 
         if not msg:
             print(
