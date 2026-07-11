@@ -1,4 +1,12 @@
+from pathlib import Path
+
 from src.ai.gemini import generate_response
+from src.config.config import config
+
+personality = ""
+
+if config["personality"]["enabled"]:
+    personality = Path(config["personality"]["path"]).read_text(encoding="utf-8")
 
 
 def start_chat_loop():
@@ -7,13 +15,18 @@ def start_chat_loop():
 
         if not msg:
             print(
-                "invalid input.\nmust contain at least one letter and cannot be whitespace!",
+                "invalid input.\nmust contain at least one letter and cannot be whitespace!"
             )
             continue
 
         if msg == "exit":
             break
 
-        reply = generate_response(msg)
+        if personality:
+            prompt = f"{personality}\n\nUser:\n{msg}"
+        else:
+            prompt = msg
+
+        reply = generate_response(prompt)
 
         print(reply)

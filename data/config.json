@@ -4,5 +4,9 @@
     "temperature": 0.9,
     "max_tokens": 1024,
     "max_history": 20
+  },
+  "personality": {
+    "enabled": true,
+    "path": "assets/personalities/Astra.txt"
   }
 }
