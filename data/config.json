@@ -2,8 +2,17 @@
   "ai": {
     "model": "gemini-3.1-flash-lite",
     "temperature": 0.9,
-    "max_tokens": 1024,
+    "max_tokens": 1024
+  },
+
+  "history": {
+    "chat_history_enabled": true,
     "max_history": 20
+  },
+
+  "memory": {
+    "model": "gemini-3.1-flash-lite",
+    "enabled": true
   },
 
   "personality": {
