@@ -6,6 +6,7 @@ from src.config.config import config
 personality = ""
 tts = None
 stt = None
+name = config["personality"]["name"]
 
 if config.get("personality", {}).get("enabled", False):
     personality = Path(config["personality"]["path"]).read_text(encoding="utf-8")
@@ -30,24 +31,24 @@ if speech_config.get("stt_enabled", False):
 def _get_user_message():
     if stt is not None:
         msg = stt.listen()
-        print(f"> {msg}")
+        print(f"User: {msg}")
         return msg
 
-    return input("> ").strip()
+    return input("User: ").strip()
 
 
 def start_chat_loop():
     while True:
         msg = _get_user_message()
 
+        if msg.casefold() == "exit":
+            break
+
         if not msg:
             print(
                 "invalid input.\nmust contain at least one letter and cannot be whitespace!"
             )
             continue
-
-        if msg == "exit":
-            break
 
         if personality:
             prompt = f"{personality}\n\nUser:\n{msg}"
@@ -56,7 +57,7 @@ def start_chat_loop():
 
         reply = generate_response(prompt)
 
-        print(reply)
+        print(f"{name}:", reply, "\n")
 
         if tts is not None:
             tts.speak(reply)

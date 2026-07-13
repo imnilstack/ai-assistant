@@ -8,6 +8,7 @@
 
   "personality": {
     "enabled": true,
+    "name": "Astra",
     "path": "assets/personalities/Astra.txt"
   },
 
