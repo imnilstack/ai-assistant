@@ -12,7 +12,7 @@
 
   "memory": {
     "model": "gemini-3.1-flash-lite",
-    "enabled": true
+    "memory_enabled": true
   },
 
   "personality": {
@@ -22,7 +22,7 @@
   },
 
   "speech": {
-    "stt_enabled": true,
+    "stt_enabled": false,
     "tts_enabled": true
   }
 }

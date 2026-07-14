@@ -1,8 +1,10 @@
+import json
 from pathlib import Path
 
 from src.ai.gemini import generate_response
 from src.config.config import config
-from src.utils.utils import ChatHistoryAppender
+from src.memory.memory import generate_memory
+from src.utils.utils import ChatHistoryAppender, MemoryManager
 
 personality = ""
 tts = None
@@ -29,6 +31,8 @@ if speech_config.get("stt_enabled", False):
     )
 
 history_appender = ChatHistoryAppender()
+memory_manager = MemoryManager()
+
 chat_history = history_appender.load_history()
 
 
@@ -41,11 +45,32 @@ def _get_user_message():
     return input("User: ").strip()
 
 
+def _load_memory_text() -> str:
+    memories = memory_manager.load_memories()
+
+    if memories is None:
+        return ""
+
+    if isinstance(memories, str):
+        return memories.strip()
+
+    return json.dumps(memories, indent=2, ensure_ascii=False)
+
+
 def _build_prompt(history: list[dict[str, str]]) -> str:
     prompt_parts = []
 
     if personality:
         prompt_parts.append(personality.strip())
+
+    memory_text = _load_memory_text()
+    if memory_text and config.get("memory", {}).get("memory_enabled", False):
+        prompt_parts.append(
+            "long-term memory:\n"
+            "each memory has a `memory_weight` from 1-10.\n"
+            "higher values indicate more important memories that should influence your responses more strongly.\n\n"
+            f"{memory_text}"
+        )
 
     for item in history:
         role = item.get("role", "")
@@ -60,6 +85,20 @@ def _build_prompt(history: list[dict[str, str]]) -> str:
             prompt_parts.append(f"{name}:\n{content}")
 
     return "\n\n".join(prompt_parts)
+
+
+def _update_memory(user_message: str, assistant_reply: str) -> None:
+    conversation_text = f"User: {user_message}\n{name}: {assistant_reply}"
+    current_memories = memory_manager.load_memories()
+    memory_update = generate_memory(current_memories, conversation_text)
+
+    if not isinstance(memory_update, dict):
+        return
+
+    if not any(memory_update.get(key) for key in ("add", "replace", "remove")):
+        return
+
+    memory_manager.apply_memory_update(memory_update)
 
 
 def start_chat_loop():
@@ -90,3 +129,9 @@ def start_chat_loop():
 
         if tts is not None:
             tts.speak(reply)
+
+        if config.get("memory", {}).get("memory_enabled", False):
+            try:
+                _update_memory(msg, reply)
+            except Exception as exc:
+                print(f"memory update skipped: {exc}")
